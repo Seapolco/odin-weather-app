@@ -1,59 +1,100 @@
+
 import './main.css';
+import getWeather from './helpers/getWeather';
 
 console.log('weather');
 
 const locationInput = document.querySelector('.locationInput');
 
+// div class="infoWrapper">
+//         <div class="weatherInfo">
+//             <div class="city">City</div>
+//             <div class="country">Country</div>
+//             <img  alt="" class="weatherIcon">
+//             <div class="main">Main</div>
+//             <div class="description">Description</div>
+//             <div class="temp">Temp</div>
+//             <div class="feelsLike">Feels Like...</div>
+//             <div class="windspeed">Windspeed</div>
+//         </div>
 
-const getLocation = async function(location) {
+let infoWrapper = document.querySelector('.infoWrapper')
+ 
+let cityCountry = document.querySelector('.cityCountry');
+// let country = document.querySelector('.country');
+let weatherIcon = document.querySelector('.weatherIcon');
+let main = document.querySelector('.main');
+// let description = document.querySelector('.description');
+let temp = document.querySelector('.temp');
+let feelsLike = document.querySelector('.feelsLike');
+let windSpeed = document.querySelector('.windspeed');
 
-    let locationData = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=1&appid=27f41a3a4a9fba20adbd686f5a4fd5ac`);
-    
-    let locationJson = await locationData.json();
 
-    console.log(locationJson)
+let placeholderWeather = async function() {
+    let data = await getWeather('London');
 
-    let latitude = await locationJson[0].lat;
+        let weatherData = data.weatherJson;
+        let countryData = data.country;
 
-    let longitude = await locationJson[0].lon;
+        cityCountry.innerText = `${weatherData.name}, ${countryData}`;
+        // country.innerText = countryData;
 
-    let state = await locationJson[0].state
+        weatherIcon.style.content = `url('https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png')`
+        weatherIcon.style.display = 'block';
 
-    console.log(latitude,longitude);
+        main.innerText = weatherData.weather[0].main;
+        // description.innerText = weatherData.weather[0].description;
 
-   return  {
-        latitude, 
-        longitude,
-        state
-    }
+        temp.innerText = `${weatherData.main.temp}°C`
+        feelsLike.innerText = `Feels like: ${weatherData.main.feels_like}°C`
+
+        windSpeed.innerText = `Windspeed : ${(weatherData.wind.speed * 2.236936).toFixed(1)} mph`
+
+        //infoWrapper.style.display = 'grid';
+
+
 }
 
+placeholderWeather();
 
-const getWeather = async function(location) {
-
-    let locationData = await getLocation(location);
-
-    let weatherData = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${locationData.latitude}&lon=${locationData.longitude}&units=metric&appid=27f41a3a4a9fba20adbd686f5a4fd5ac`);
-
-    let country = locationData.state;
-
-    let weatherJson = await weatherData.json();
-
-    console.log(weatherJson, country)
-    
-}
-
-locationInput.addEventListener('keydown', (e) => {
+locationInput.addEventListener('keydown', async (e) => {
     if(e.key === 'Enter') {
         console.log('ererere');
         let location = locationInput.value;
 
-        getWeather(location);
+        let data = await getWeather(location);
+
+        let weatherData = data.weatherJson;
+        let countryData = data.country;
+
+        cityCountry.innerText = `${weatherData.name}, ${countryData}`;
+        // country.innerText = countryData;
+
+        weatherIcon.style.content = `url('https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png')`
+        weatherIcon.style.display = 'block';
+
+        main.innerText = weatherData.weather[0].main;
+        // description.innerText = weatherData.weather[0].description;
+
+        temp.innerText = `${weatherData.main.temp}°C`
+        feelsLike.innerText = `Feels like: ${weatherData.main.feels_like}°C`
+
+        windSpeed.innerText = `Windspeed : ${(weatherData.wind.speed * 2.236936).toFixed(1)} mph`
+
+        infoWrapper.style.display = 'grid';
+
+
+        console.log(weatherData.weather[0].icon)
+
+
+
+        // console.log(weatherDataAndCouhntry)
+
     }
 })
 
 
 
 
-//getWeather('Poole');
+
 
